@@ -1,0 +1,9 @@
+name: popf-early-prediction
+channels:
+  - pytorch
+  - conda-forge
+dependencies:
+  - python=3.11.9
+  - pip=24.0
+  - pip:
+      - -r requirements.txt
