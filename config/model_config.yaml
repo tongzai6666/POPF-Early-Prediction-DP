@@ -1,0 +1,40 @@
+seed: 42
+
+model:
+  bert_model_name: emilyalsentzer/Bio_ClinicalBERT
+  d_model: 768
+  freeze_bert_layers: 6
+  num_time_stages: 4
+  num_attention_heads: 8
+  num_transformer_layers: 4
+  d_ff: 3072
+  transformer_dropout: 0.10
+  classifier_dropout: 0.30
+  primary_hidden_dims: [512, 256, 128]
+  severity_hidden_dims: [256, 128]
+  use_batch_norm: true
+  primary_loss_weight: 1.0
+  severity_loss_weight: 1.0
+
+training:
+  max_epochs: 100
+  batch_size: 32
+  base_learning_rate: 0.00002
+  bert_learning_rate_multiplier: 0.10
+  weight_decay: 0.01
+  gradient_clip_norm: 1.0
+  early_stopping_patience: 15
+  scheduler_patience: 5
+  scheduler_factor: 0.5
+  tuning_fraction: 0.15
+  num_workers: 2
+
+thresholds:
+  leakage_probability: 0.40
+  cr_popf_probability: 0.31
+  provenance: "Locked study thresholds selected by Youden index in the training cohort"
+
+labels:
+  patient_id: patient_id
+  leakage: label_leakage
+  cr_popf: label_cr_popf

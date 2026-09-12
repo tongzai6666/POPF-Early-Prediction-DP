@@ -1,0 +1,47 @@
+# Four explicit perioperative stages used in the manuscript.
+# stage_id: baseline=0, preoperative=1, intraoperative=2, postoperative_24h=3
+# Column names may be adapted to the local EHR export without changing the model code.
+features:
+  - {name: age, description: "Patient age in years", type: numeric, stage: baseline, core: false}
+  - {name: sex, description: "Patient biological sex", type: categorical, stage: baseline, core: false}
+  - {name: bmi, description: "Body mass index", type: numeric, stage: baseline, core: false}
+  - {name: hypertension, description: "History of hypertension", type: categorical, stage: baseline, core: false}
+  - {name: diabetes, description: "History of diabetes mellitus", type: categorical, stage: baseline, core: false}
+
+  - {name: ct_pancreas, description: "Unenhanced computed tomography attenuation of the pancreas in Hounsfield units", type: numeric, stage: preoperative, core: true}
+  - {name: ct_liver, description: "Unenhanced computed tomography attenuation of the liver in Hounsfield units", type: numeric, stage: preoperative, core: false}
+  - {name: ct_spleen, description: "Unenhanced computed tomography attenuation of the spleen in Hounsfield units", type: numeric, stage: preoperative, core: false}
+  - {name: ct_psoas_major, description: "Unenhanced computed tomography attenuation of the psoas major muscle in Hounsfield units", type: numeric, stage: preoperative, core: false}
+  - {name: pancreas_spleen_ratio, description: "Pancreas-to-spleen computed tomography attenuation ratio", type: numeric, stage: preoperative, core: false}
+  - {name: pancreas_liver_ratio, description: "Pancreas-to-liver computed tomography attenuation ratio", type: numeric, stage: preoperative, core: false}
+  - {name: pancreas_psoas_ratio, description: "Pancreas-to-psoas major computed tomography attenuation ratio", type: numeric, stage: preoperative, core: true}
+  - {name: neck_pancreatic_thickness, description: "Pancreatic thickness at the pancreatic neck in millimeters", type: numeric, stage: preoperative, core: false}
+  - {name: neck_mpdd, description: "Main pancreatic duct diameter at the pancreatic neck in millimeters", type: numeric, stage: preoperative, core: false}
+  - {name: preop_hgb, description: "Preoperative hemoglobin", type: numeric, stage: preoperative, core: false}
+  - {name: preop_rbc, description: "Preoperative red blood cell count", type: numeric, stage: preoperative, core: false}
+  - {name: preop_plt, description: "Preoperative platelet count", type: numeric, stage: preoperative, core: false}
+  - {name: preop_alb, description: "Preoperative serum albumin", type: numeric, stage: preoperative, core: false}
+  - {name: preop_wbc, description: "Preoperative white blood cell count", type: numeric, stage: preoperative, core: false}
+  - {name: preop_monocyte, description: "Preoperative monocyte count", type: numeric, stage: preoperative, core: false}
+  - {name: preop_pni, description: "Preoperative prognostic nutritional index", type: numeric, stage: preoperative, core: true}
+  - {name: preop_nlr, description: "Preoperative neutrophil-to-lymphocyte ratio", type: numeric, stage: preoperative, core: false}
+  - {name: preop_car, description: "Preoperative C-reactive protein-to-albumin ratio", type: numeric, stage: preoperative, core: true}
+
+  - {name: transection_pancreatic_thickness, description: "Pancreatic thickness at the transection site in millimeters", type: numeric, stage: intraoperative, core: true}
+  - {name: transection_mpdd, description: "Main pancreatic duct diameter at the transection site in millimeters", type: numeric, stage: intraoperative, core: false}
+  - {name: surgical_approach, description: "Surgical approach for distal pancreatectomy", type: categorical, stage: intraoperative, core: true}
+  - {name: operation_time, description: "Operative duration in minutes", type: numeric, stage: intraoperative, core: true}
+  - {name: blood_loss, description: "Estimated intraoperative blood loss", type: numeric, stage: intraoperative, core: false}
+  - {name: transfusion, description: "Intraoperative transfusion amount", type: numeric, stage: intraoperative, core: false}
+  - {name: stump_management, description: "Pancreatic stump management technique", type: categorical, stage: intraoperative, core: false}
+
+  - {name: postop24h_dfa, description: "Drain fluid amylase within 24 hours after surgery", type: numeric, stage: postoperative_24h, core: true}
+  - {name: postop24h_hgb, description: "Hemoglobin within 24 hours after surgery", type: numeric, stage: postoperative_24h, core: false}
+  - {name: postop24h_rbc, description: "Red blood cell count within 24 hours after surgery", type: numeric, stage: postoperative_24h, core: false}
+  - {name: postop24h_plt, description: "Platelet count within 24 hours after surgery", type: numeric, stage: postoperative_24h, core: false}
+  - {name: postop24h_alb, description: "Serum albumin within 24 hours after surgery", type: numeric, stage: postoperative_24h, core: false}
+  - {name: postop24h_wbc, description: "White blood cell count within 24 hours after surgery", type: numeric, stage: postoperative_24h, core: false}
+  - {name: postop24h_monocyte, description: "Monocyte count within 24 hours after surgery", type: numeric, stage: postoperative_24h, core: false}
+  - {name: postop24h_pni, description: "Prognostic nutritional index within 24 hours after surgery", type: numeric, stage: postoperative_24h, core: false}
+  - {name: postop24h_nlr, description: "Neutrophil-to-lymphocyte ratio within 24 hours after surgery", type: numeric, stage: postoperative_24h, core: true}
+  - {name: postop24h_car, description: "C-reactive protein-to-albumin ratio within 24 hours after surgery", type: numeric, stage: postoperative_24h, core: false}
