@@ -46,11 +46,23 @@ The fused variable embeddings are passed through four context-aware gated Transf
 
 ## Hierarchical soft-sequential dual-task classifiers
 
-The shared patient representation is passed to a primary multilayer perceptron with hidden dimensions 512, 256, and 128. Batch normalization, GELU activation, and dropout of 0.30 are applied within the classifier. The primary output is the probability of the broader pancreatic leakage phenotype.
+The shared patient representation is passed to a primary multilayer perceptron with hidden dimensions 512, 256, and 128. Batch normalization, GELU activation, and dropout of 0.30 are applied within the classifier. The primary output is the probability of the broader pancreatic leakage phenotype, defined as biochemical leak or Grade B/C CR-POPF.
 
-The second-stage classifier receives the shared patient representation, the 128-dimensional hidden representation from the primary classifier, and the primary probability. A learned gate modulates the primary hidden representation before concatenation with the shared representation and primary probability. The resulting vector is processed by a second multilayer perceptron with hidden dimensions 256 and 128 and dropout of 0.30, producing the CR-POPF grading probability. This structure is soft-sequential because the second stage uses information from the first stage but remains differentiable and is trained jointly with the shared representation.
+The second-stage classifier receives the shared patient representation, the 128-dimensional hidden representation from the primary classifier, and the primary probability. A learned gate modulates the primary hidden representation before concatenation with the shared representation and primary probability. The resulting vector is processed by a second multilayer perceptron with hidden dimensions 256 and 128 and dropout of 0.30, producing the conditional CR-POPF grading probability among leakage-positive patients. This structure is soft-sequential because the second stage uses information from the first stage but remains differentiable and is trained jointly with the shared representation.
 
-For transparency, the public implementation also returns the product of the first- and second-stage probabilities as an optional sensitivity output. The prespecified manuscript endpoint and the locked CR-POPF threshold are applied to the second-stage CR-POPF grading probability.
+Let p_leak denote the first-stage pancreatic leakage probability and p_CR|leak denote the second-stage conditional CR-POPF grading probability. Because CR-POPF is a subset of the broader pancreatic leakage phenotype, the final population-level probability of CR-POPF is calculated as
+
+p_CR = p_leak × p_CR|leak.
+
+Accordingly, the public implementation distinguishes among three probability outputs:
+
+- `pancreatic_leakage_probability = P(pancreatic leakage)`
+- `conditional_cr_popf_probability = P(CR-POPF | pancreatic leakage)`
+- `cr_popf_probability = P(CR-POPF) = P(pancreatic leakage) × P(CR-POPF | pancreatic leakage)`
+
+The prespecified manuscript endpoint for CR-POPF prediction is the final population-level `cr_popf_probability` obtained from the product of the first-stage pancreatic leakage probability and the second-stage conditional CR-POPF probability.
+
+For backward compatibility, the public implementation additionally returns `joint_cr_popf_probability`, which is numerically identical to `cr_popf_probability`.
 
 ## Class imbalance and loss function
 
@@ -70,7 +82,15 @@ The final configuration uses a maximum of 100 epochs, batch size 32, AdamW optim
 
 ## Decision-threshold selection
 
-Decision thresholds are determined from the training cohort using the Youden index and are not optimized in internal or external evaluation data. The locked manuscript thresholds are 0.40 for the broader pancreatic leakage output and 0.31 for the CR-POPF grading output. The public repository includes an audit utility that can recompute Youden thresholds from training-cohort predictions; however, the released evaluation and inference scripts use the locked study thresholds and do not recalibrate them on evaluation data.
+Decision thresholds are determined from the training cohort using the Youden index and are not optimized in internal or external evaluation data. The locked manuscript thresholds are 0.40 for the broader pancreatic leakage output and 0.31 for the final population-level CR-POPF output.
+
+The pancreatic leakage threshold of 0.40 is applied to `pancreatic_leakage_probability`.
+
+The CR-POPF threshold of 0.31 is applied to the final population-level `cr_popf_probability`, defined as
+
+cr_popf_probability = pancreatic_leakage_probability × conditional_cr_popf_probability.
+
+The public repository includes an audit utility that can recompute Youden thresholds from training-cohort predictions; however, the released evaluation and inference scripts use the locked study thresholds and do not recalibrate them on internal or external evaluation data.
 
 ## Model locking before internal and external evaluation
 
@@ -80,7 +100,10 @@ After training is complete, the release bundle contains the final model weights,
 
 The public implementation is written in Python 3.11 and PyTorch and uses the Hugging Face Transformers library for Bio-Clinical BERT. The GitHub release pins package versions in `requirements.txt` and provides a Conda environment definition in `environment.yml`. The principal pinned versions are PyTorch 2.3.1, Transformers 4.41.2, Tokenizers 0.19.1, NumPy 1.26.4, pandas 2.2.2, SciPy 1.13.1, and scikit-learn 1.5.0. The repository contains separate scripts for model training and locking, evaluation of locked cohorts, batch or single-cohort inference, threshold auditing, release-manifest verification, and the research web prototype. Real patient-level data are not distributed in the repository.
 
+The public implementation distinguishes explicitly between the conditional second-stage CR-POPF probability and the final population-level CR-POPF probability. During inference, the first-stage pancreatic leakage probability and the second-stage conditional CR-POPF probability are multiplied to obtain the final population-level `cr_popf_probability` used for the reported CR-POPF prediction task.
+
 ## References for reporting guidance
 
 1. Collins GS, Moons KGM, Dhiman P, et al. TRIPOD+AI statement: updated guidance for reporting clinical prediction models that use regression or machine learning methods. BMJ. 2024;385:e078378. doi:10.1136/bmj-2023-078378.
+
 2. Moons KGM, Damen JAA, Kaul T, et al. PROBAST+AI: an updated quality, risk of bias, and applicability assessment tool for prediction models using regression or artificial intelligence methods. BMJ. 2025;388:e082505. doi:10.1136/bmj-2024-082505.
