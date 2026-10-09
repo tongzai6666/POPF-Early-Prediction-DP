@@ -659,9 +659,9 @@ class DualTaskFramework(nn.Module):
         # ---------------------------------------------------------
         # Patient-level category labels
         #
-        # IMPORTANT:
-        # cr_threshold must later be re-derived from the training
-        # cohort using the NEW final population-level CR probability.
+        # The locked pancreatic leakage threshold is 0.40.
+        # The locked CR-POPF threshold is 0.31 and is applied
+        # to the final population-level CR-POPF probability.
         # ---------------------------------------------------------
         grades = []
 
